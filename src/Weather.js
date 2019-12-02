@@ -4,8 +4,13 @@ import "./Weather.css";
 export default function Weather() {
   return (
     <div className="Weather">
+      <form>
+        <input type="search" placeholder="Enter a city..." />
+        <input type="submit" value="Search" />
+        <button>Current</button>
+      </form>
       <div className="row align-items-center">
-        <div class="col-4">
+        <div className="col-4">
           <h1>Póvoa de Varzim</h1>
           <h2>Sunday</h2>
           <h2>December 1</h2>
