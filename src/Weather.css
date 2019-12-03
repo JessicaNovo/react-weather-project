@@ -44,7 +44,7 @@
   line-height: 1;
 }
 
-.Weather .current-temperature {
+.Weather .temperature {
   font-size: 50px;
   font-weight: 500;
   line-height: 1;
@@ -52,11 +52,15 @@
 
 .Weather .temperature-units {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 100;
   line-height: 1;
   position: relative;
   top: -24px;
   margin-left: 5px;
+}
+
+.Weather .active-unit {
+  font-weight: bold;
 }
 
 .Weather ul {
