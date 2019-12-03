@@ -1,0 +1,13 @@
+@import url("https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap");
+
+.App {
+  margin: 50px auto;
+  max-width: 800px;
+  font-family: "Nunito Sans", sans-serif;
+  color: #323643;
+}
+
+.App footer {
+  font-size: 14px;
+  margin: 5px 0;
+}
