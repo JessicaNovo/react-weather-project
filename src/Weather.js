@@ -1,60 +1,86 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import "./Weather.css";
 
-export default function Weather() {
-  return (
-    <div className="Weather">
-      <form>
-        <div className="form-row">
-          <div className="form-group col-md-8">
-            <input
-              type="search"
-              placeholder="Enter a city..."
-              className="form-control"
-              autoFocus="on"
-            />
+export default function Weather(props) {
+  function getWeather(response) {
+    setWeather({
+      city: response.data.name,
+      country: response.data.sys.country,
+      temperature: response.data.main.temp,
+      description: response.data.weather[0].description,
+      humidity: response.data.main.humidity,
+      wind: response.data.main.temp,
+      icon: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`
+    });
+    setReady(true);
+  }
+
+  let [ready, setReady] = useState(false);
+  let [weather, setWeather] = useState({});
+  const apiKey = "0438fc32e86f8783300a37cf62f26092";
+
+  if (ready) {
+    return (
+      <div className="Weather">
+        <form>
+          <div className="form-row">
+            <div className="form-group col-md-8">
+              <input
+                type="search"
+                placeholder="Enter a city..."
+                className="form-control"
+                autoFocus="on"
+              />
+            </div>
+            <div className="form-group col-md-2">
+              <input
+                type="submit"
+                value="Search"
+                className="btn btn-primary w-100"
+              />
+            </div>
+            <div className="form-group col-md-2">
+              <button className="btn btn-secondary w-100">Current</button>
+            </div>
           </div>
-          <div className="form-group col-md-2">
-            <input
-              type="submit"
-              value="Search"
-              className="btn btn-secondary w-100"
-            />
+        </form>
+        <div className="row align-items-center">
+          <div className="col-sm-4">
+            <h1>
+              {weather.city}, {weather.country}
+            </h1>
+            <h2>Sunday, December 1</h2>
+            <p className="updated">Last updated: 22h00</p>
           </div>
-          <div className="form-group col-md-2">
-            <button className="btn btn-secondary w-100">Current</button>
+          <div className="col-sm-4 current-weather">
+            <img src={weather.icon} alt="{weather.description}" />
+            <div>
+              <p className="weather-description">{weather.description}</p>
+              <span className="current-temperature">
+                {Math.round(weather.temperature)}
+              </span>
+              <small className="temperature-units">
+                ºC | <a href="/">ºF</a>
+              </small>
+            </div>
           </div>
-        </div>
-      </form>
-      <div className="row align-items-center">
-        <div className="col-sm-4">
-          <h1>Póvoa de Varzim</h1>
-          <h2>Sunday, December 1</h2>
-          <p className="updated">Last updated: 22h00</p>
-        </div>
-        <div className="col-sm-4 current-weather">
-          <img
-            src="https://ssl.gstatic.com/onebox/weather/64/sunny.png"
-            alt=""
-          />
-          <div>
-            <p className="weather-description">Clear</p>
-            <span className="current-temperature">12</span>
-            <small className="temperature-units">
-              ºC | <a href="/">ºF</a>
-            </small>
+          <div className="col-sm-4">
+            <ul>
+              <li>Sunrise: 07h36</li>
+              <li>Sunset: 17h14</li>
+              <br />
+              <li>Humidity: {Math.round(weather.humidity)} %</li>
+              <li>Wind: {Math.round(weather.wind)} km/h</li>
+            </ul>
           </div>
-        </div>
-        <div className="col-sm-4">
-          <ul>
-            <li>Sunrise: 07h36</li>
-            <li>Sunset: 17h14</li>
-            <br />
-            <li>Humidity: 66%</li>
-            <li>Wind: 23 km/h</li>
-          </ul>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    let city = props.deafultCity;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(getWeather);
+    return <h1>Loading...</h1>;
+  }
 }

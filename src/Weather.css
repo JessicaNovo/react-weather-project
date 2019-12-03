@@ -1,5 +1,5 @@
 .Weather {
-  border: 1px solid #004445;
+  border: 1px solid #323643;
   border-radius: 4px;
   padding: 30px;
   text-align: center;
@@ -42,6 +42,7 @@
   font-size: 16px;
   font-weight: 100px;
   line-height: 1;
+  text-transform: capitalize;
 }
 
 .Weather .current-temperature {

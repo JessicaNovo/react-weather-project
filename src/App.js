@@ -5,7 +5,7 @@ import "./App.css";
 export default function App() {
   return (
     <div className="App container">
-      <Weather />
+      <Weather deafultCity="Póvoa de Varzim" />
       <footer>
         <a
           href="https://github.com/JessicaNovo/react-weather-project"
