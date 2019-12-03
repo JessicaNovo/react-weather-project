@@ -1,13 +1,35 @@
 import React, { useState } from "react";
 import axios from "axios";
-import FormatDate from "./FormatDate";
-import FormatTime from "./FormatTime";
+import WeatherDisplay from "./WeatherDisplay";
 
 import "./Weather.css";
 
 export default function Weather(props) {
+  let apiKey = `0438fc32e86f8783300a37cf62f26092`;
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    city = city.trim();
+
+    if (city === "") {
+      return false;
+    } else {
+      search();
+    }
+  }
+
+  function getCity(event) {
+    setCity(event.target.value);
+  }
+
+  function search() {
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(getWeather);
+  }
+
   function getWeather(response) {
     setWeather({
+      ready: true,
       city: response.data.name,
       country: response.data.sys.country,
       date: new Date(response.data.dt * 1000),
@@ -19,17 +41,26 @@ export default function Weather(props) {
       humidity: response.data.main.humidity,
       wind: response.data.main.temp
     });
-    setReady(true);
   }
 
-  let [ready, setReady] = useState(false);
-  let [weather, setWeather] = useState({});
-  const apiKey = "0438fc32e86f8783300a37cf62f26092";
+  function getCurrentCity() {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  }
 
-  if (ready) {
+  function showPosition(position) {
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(getWeather);
+  }
+
+  const [weather, setWeather] = useState({ ready: false });
+  let [city, setCity] = useState(props.defaultCity);
+
+  if (weather.ready) {
     return (
       <div className="Weather">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group col-md-8">
               <input
@@ -37,6 +68,7 @@ export default function Weather(props) {
                 placeholder="Enter a city..."
                 className="form-control"
                 autoFocus="on"
+                onChange={getCity}
               />
             </div>
             <div className="form-group col-md-2">
@@ -47,54 +79,20 @@ export default function Weather(props) {
               />
             </div>
             <div className="form-group col-md-2">
-              <button className="btn btn-secondary w-100">Current</button>
+              <button
+                className="btn btn-secondary w-100"
+                onClick={getCurrentCity}
+              >
+                Current
+              </button>
             </div>
           </div>
         </form>
-        <div className="row align-items-center">
-          <div className="col-sm-4">
-            <h1>
-              {weather.city}, {weather.country}
-            </h1>
-            <h2>
-              <FormatDate date={weather.date} />
-            </h2>
-            <p className="updated">
-              Last updated: <FormatTime time={weather.date} />
-            </p>
-          </div>
-          <div className="col-sm-4 current-weather">
-            <img src={weather.icon} alt="{weather.description}" />
-            <div>
-              <p className="weather-description">{weather.description}</p>
-              <span className="current-temperature">
-                {Math.round(weather.temperature)}
-              </span>
-              <small className="temperature-units">
-                ºC | <a href="/">ºF</a>
-              </small>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <ul>
-              <li>
-                Sunrise: <FormatTime time={weather.sunrise} />
-              </li>
-              <li>
-                Sunset: <FormatTime time={weather.sunset} />
-              </li>
-              <br />
-              <li>Humidity: {Math.round(weather.humidity)} %</li>
-              <li>Wind: {Math.round(weather.wind)} km/h</li>
-            </ul>
-          </div>
-        </div>
+        <WeatherDisplay data={weather} />
       </div>
     );
   } else {
-    let city = props.deafultCity;
-    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    axios.get(apiUrl).then(getWeather);
-    return <h1>Loading...</h1>;
+    search();
+    return <div>Loading...</div>;
   }
 }
