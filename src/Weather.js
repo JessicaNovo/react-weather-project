@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import FormatDate from "./FormatDate";
+import FormatTime from "./FormatTime";
+
 import "./Weather.css";
 
 export default function Weather(props) {
@@ -7,11 +10,14 @@ export default function Weather(props) {
     setWeather({
       city: response.data.name,
       country: response.data.sys.country,
+      date: new Date(response.data.dt * 1000),
       temperature: response.data.main.temp,
-      description: response.data.weather[0].description,
+      description: response.data.weather[0].main,
+      icon: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+      sunrise: new Date(response.data.sys.sunrise * 1000),
+      sunset: new Date(response.data.sys.sunset * 1000),
       humidity: response.data.main.humidity,
-      wind: response.data.main.temp,
-      icon: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`
+      wind: response.data.main.temp
     });
     setReady(true);
   }
@@ -50,8 +56,12 @@ export default function Weather(props) {
             <h1>
               {weather.city}, {weather.country}
             </h1>
-            <h2>Sunday, December 1</h2>
-            <p className="updated">Last updated: 22h00</p>
+            <h2>
+              <FormatDate date={weather.date} />
+            </h2>
+            <p className="updated">
+              Last updated: <FormatTime time={weather.date} />
+            </p>
           </div>
           <div className="col-sm-4 current-weather">
             <img src={weather.icon} alt="{weather.description}" />
@@ -67,8 +77,12 @@ export default function Weather(props) {
           </div>
           <div className="col-sm-4">
             <ul>
-              <li>Sunrise: 07h36</li>
-              <li>Sunset: 17h14</li>
+              <li>
+                Sunrise: <FormatTime time={weather.sunrise} />
+              </li>
+              <li>
+                Sunset: <FormatTime time={weather.sunset} />
+              </li>
               <br />
               <li>Humidity: {Math.round(weather.humidity)} %</li>
               <li>Wind: {Math.round(weather.wind)} km/h</li>
